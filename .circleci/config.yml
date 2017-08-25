@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: ruby:2.4
+    working_directory: /home/ubuntu/app
+    steps:
+      - checkout
+      - run: apt-get update -qq && apt-get install -y build-essential nodejs sqlite3
+      - run: bundle install
+      - run: bundle exec rake db:create db:schema:load --trace
+      - run: bundle exec rake db:migrate
+      - run: bundle exec rake test
