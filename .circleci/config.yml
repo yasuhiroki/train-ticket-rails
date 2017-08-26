@@ -8,11 +8,11 @@ jobs:
       - checkout
       - run: apt-get update -qq && apt-get install -y build-essential nodejs sqlite3
       - restore_cache:
-        keys:
-          - v1-dependencies-{{ checksum "Gemfile.lock" }}
-            # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: --jobs=4 --retry=3 --path vendor/bundle
+          keys:
+            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+              # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: bundle install --jobs=4 --retry=3 --path vendor/bundle
       - save_cache:
           paths:
             - ./vendor
@@ -20,3 +20,4 @@ jobs:
       - run: bundle exec rake db:create db:schema:load --trace
       - run: bundle exec rake db:migrate
       - run: bundle exec rake test
+      - run: bundle exec danger
