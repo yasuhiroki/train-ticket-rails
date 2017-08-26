@@ -41,6 +41,8 @@ group :development, :test do
   gem 'selenium-webdriver'
 
   gem 'rubocop'
+  gem 'danger'
+  gem 'danger-rubocop'
 end
 
 group :development do
