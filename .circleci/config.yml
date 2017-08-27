@@ -9,9 +9,19 @@ jobs:
       - run: apt-get update -qq && apt-get install -y build-essential nodejs sqlite3
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
+            - reviewdog-0.9.8
+      - run: |
+          wget https://github.com/haya14busa/reviewdog/releases/download/0.9.8/reviewdog_linux_amd64 -O reviewdog
+          chmod 755 reviewdog
+      - save_cache:
+          paths:
+            - ./reviewdog
+          key: reviewdog-0.9.8
+      - restore_cache:
+          keys:
+            - gem-dependencies-{{ checksum "Gemfile.lock" }}
               # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - gem-dependencies-
       - run: bundle install --jobs=4 --retry=3 --path vendor/bundle
       - save_cache:
           paths:
@@ -21,3 +31,4 @@ jobs:
       - run: bundle exec rake db:migrate
       - run: bundle exec rake test
       - run: bundle exec danger
+      - run: bundle exec rubocop | ./reviewdog -ci circle-ci  -f rubocop || true
